@@ -1,10 +1,11 @@
 from PIL import Image
+from typing import List, Type
 
 import math
 import os
 
 
-def open_png_files():
+def open_png_files() -> List[Type['Image']]:
     files_list = os.listdir('.')
     png_list = []
     open_png_list = []
@@ -18,8 +19,9 @@ def open_png_files():
     return open_png_list
 
 
-def cropping_legend(file_list):
+def cropping_legend(file_list: List[Type['Image']]) -> List[Type['Image']]:
     cropping_png = []
+
     for item in file_list:
         width, height = item.size
         area = (0, 0, width, height-127)
@@ -28,13 +30,13 @@ def cropping_legend(file_list):
     return cropping_png
 
 
-def create_new_png(png_list, color=(255, 255, 255)):
+def create_new_png(png_list: List[Type['Image']], color=(255, 255, 255)) -> Image:
     global highest
     highest = max(png_list, key=lambda png: png.height).height
     png_width = 0
     little_png_list = png_list
 
-    for n in range(count_server//2):
+    for n in range(count_server // 2 + count_server % 2):
         try:
             img2 = png_list[n*2+1]
         except IndexError:
@@ -46,10 +48,10 @@ def create_new_png(png_list, color=(255, 255, 255)):
     return dst
 
 
-def add_servers_in_new_png(new_png, png_list):
+def add_servers_in_new_png(new_png: Image, png_list: List[Type['Image']]) -> Image:
     width_png_all = 0
 
-    for n in range(count_server//2):
+    for n in range(count_server // 2 + count_server % 2):
         img1 = png_list[n*2]
 
         try:
@@ -71,22 +73,17 @@ def add_servers_in_new_png(new_png, png_list):
             new_png.paste(img2, (width1, height2))
         width_png_all += max(img1.width, img2.width)
 
-    new_png.save('New_map_of_servers.jpg')
-    return print('done')
+    return new_png.save('New_map_of_servers.jpg')
 
 
-def new_img(weight, height):
+def new_img(weight: int, height: int) -> Image:
     return Image.new('RGB', (weight, height), color=(255, 255, 255))
 
 
-highest = 0
-
-server_list = open_png_files()
-
-count_server = len(server_list)
-
-server_list = cropping_legend(server_list)
-
-new_map = create_new_png(server_list)
-
-add_servers_in_new_png(new_map, server_list)
+if __name__ == '__main__':
+    highest: int = 0
+    server_list: List[Type['Image']] = open_png_files()
+    count_server: int = len(server_list)
+    server_list: List[Type['Image']] = cropping_legend(server_list)
+    new_map: Image = create_new_png(server_list)
+    add_servers_in_new_png(new_map, server_list)
